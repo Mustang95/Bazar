@@ -11,6 +11,7 @@ app.use('*', cors()); // TODO quero aprender cors.
 // 1. GERADOR DE SEED FIXA (MOCK DATA)
 // ==========================================
 // Função determinística para gerar números pseudo-aleatórios idênticos
+// algoritmo matemático famoso chamado Mulberry32. Ele é um gerador de números pseudo-aleatórios determinístico.
 function createRandomGenerator(seed: number) {
   return function () {
     let t = (seed += 0x6d2b79f5);
@@ -45,7 +46,6 @@ app.use('*', async (context, next) => {
 
     // Uma Promise sem resolve() nem reject() trava a conexão TCP para sempre
     await new Promise(() => {});
-    return; // O código morre aqui, o cliente vai dar Timeout
   }
 
   // --- PARTE C: ERROS INTERMITENTES (8% de chance) ---
@@ -54,7 +54,7 @@ app.use('*', async (context, next) => {
 
   if (Math.random() < taxaDeErro) {
     // Escolhe aleatoriamente um erro comum de rede/servidor
-    let statusEscolhido = 500;
+    let statusEscolhido = 500 as const;
 
     console.error(
       `💥 [Hostile Server] Simulando erro HTTP ${statusEscolhido}!`,
@@ -66,7 +66,7 @@ app.use('*', async (context, next) => {
         message: 'Instabilidade simulada. O seu Front-end sabe lidar com isso?',
         timestamp: new Date().toISOString(),
       },
-      statusEscolhido as any,
+      statusEscolhido,
     );
   }
 
@@ -74,7 +74,7 @@ app.use('*', async (context, next) => {
   await next();
 });
 
-// Cria um banco de dados estático em memória com 100 itens fixos
+// Cria um banco de dados estático em memória com 5000 itens fixos
 const TOTAL_ITEMS = 5000;
 const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
   const idNum = index + 1000;
@@ -83,8 +83,10 @@ const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
 
   return {
     id: cursorId,
-    name: `User ${index + 1}`,
-    score: Math.floor(nextRandom() * 5000), // Pontuação aleatória, mas fixa pela seed
+    titulo: `Produto ${index + 1}`,
+    preco: Math.floor(nextRandom() * 5000), // Pontuação aleatória, mas fixa pela seed
+    categoria: Math.floor(nextRandom() * 5000), // Pontuação aleatória, mas fixa pela seed
+    estoque: Math.floor(nextRandom() * 5000), // Pontuação aleatória, mas fixa pela seed
     isActive: nextRandom() > 0.3,
   };
 });
@@ -92,7 +94,7 @@ const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
 // ==========================================
 // 3. ROTA COM PAGINAÇÃO POR CURSOR
 // ==========================================
-app.get('/api/users', (context) => {
+app.get('/api/produtos', (context) => {
   // Captura os parâmetros opcionais da query string
   const cursorParam = context.req.query('cursor') || null;
   const limitParam = context.req.query('limit') || '10';
