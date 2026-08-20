@@ -1,5 +1,5 @@
 {
-  "name": "bazar-core",
+  "name": "bazar-mock-server",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
