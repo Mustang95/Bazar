@@ -112,7 +112,9 @@ app.use('/api/*', async (context, next) => {
     const statusEscolhido =
       STATUS_DE_ERRO[Math.floor(Math.random() * STATUS_DE_ERRO.length)];
 
-    console.error(`💥 [Hostile Server] Simulando erro HTTP ${statusEscolhido}!`);
+    console.error(
+      `💥 [Hostile Server] Simulando erro HTTP ${statusEscolhido}!`,
+    );
 
     return context.json(
       {
@@ -149,6 +151,32 @@ const CATEGORIAS = [
   'Decoracao',
 ] as const;
 
+const PAISES = [
+  'China',
+  'Brasil',
+  'Taiwan',
+  'França',
+  'Suíça',
+  'Marrocos',
+] as const;
+
+const CONDICOES = [
+  'Imperdível',
+  'Acabando os estoques',
+  'Promoção',
+  'BlackFriday',
+  'Entrega Hoje',
+] as const;
+
+const VENDEDORES = [
+  'Nike',
+  'Adidas',
+  'Puma',
+  'New Balance',
+  'H&M',
+  'Zara',
+] as const;
+
 const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
   const idNum = index + 1000;
 
@@ -169,10 +197,15 @@ const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
     // 0.1 + 0.2 !== 0.3 em ponto flutuante, e em preço isso vira centavo perdido na soma
     // do carrinho. Formatar para "R$ 49,90" é responsabilidade da apresentação.
     precoCentavos: 1000 + Math.floor(nextRandom() * 49000), // R$ 10,00 a R$ 499,99
+    pais: PAISES[Math.floor(nextRandom() * PAISES.length)],
+    condicao: CONDICOES[Math.floor(nextRandom() * CONDICOES.length)],
+    vendedor: VENDEDORES[Math.floor(nextRandom() * VENDEDORES.length)],
     // Antes era Math.floor(nextRandom() * 5000): categoria como número não é categoria.
     // Agora o sorteio indexa a lista de categorias reais.
     categoria: CATEGORIAS[Math.floor(nextRandom() * CATEGORIAS.length)],
     estoque: Math.floor(nextRandom() * 50),
+    createdAt: new Date().toISOString(),
+    views: Math.floor(nextRandom() * 1000000),
   };
 });
 
