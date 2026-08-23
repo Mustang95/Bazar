@@ -44,7 +44,7 @@ export function construirIndice(produtos: TProduto[]): TInvertedIndex {
  * @param indice
  * @returns
  */
-export function buscar(
+export function buscarIntersecao(
   consulta: string,
   indice: TInvertedIndex,
 ): Set<string | number> {

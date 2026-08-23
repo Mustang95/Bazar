@@ -237,6 +237,17 @@ const indicePorCursor = new Map<string, number>();
 database.forEach((produto, index) => indicePorCursor.set(produto.id, index));
 
 // ==========================================
+// 3. ROTA PARA FASE 02
+// mandar 5.000 itens pro cliente não escala — em produção a busca vai pro servidor.
+// Aqui é deliberado, o exercício é sobre estrutura de dados no front.
+// ==========================================
+app.get('/api/produtos/todos', (context) => {
+  return context.json({
+    data: database,
+  });
+});
+
+// ==========================================
 // 3. ROTA COM PAGINAÇÃO POR CURSOR
 // ==========================================
 app.get('/api/produtos', (context) => {

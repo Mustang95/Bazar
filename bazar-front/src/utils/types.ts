@@ -46,6 +46,13 @@ export interface TCriterioOrdenacao {
   order: 'asc' | 'desc';
 }
 
+export type CatalogoStatus =
+  | 'loading'
+  | 'error'
+  | 'empty_catalog'
+  | 'no_results'
+  | 'success';
+
 export interface LRUCache<K, V> {
   get: (key: K) => V | undefined;
   set: (key: K, value: V) => void;
@@ -61,3 +68,27 @@ export interface TResultadoPaginado<T> {
   totalCount: number;
   cursorInvalido?: boolean;
 }
+
+export type TFiltrosSelecionados = {
+  vendedor?: string;
+  condicao?: string;
+  pais?: string;
+};
+
+export type TResultado =
+  | {
+      items: never[];
+      facets: null;
+      nextCursor: null;
+      hasMore: boolean;
+      totalCount: number;
+      status: string;
+    }
+  | {
+      items: TProduto[];
+      facets: TResultadoFacetas;
+      nextCursor: string | null;
+      hasMore: boolean;
+      totalCount: number;
+      status: string;
+    };
