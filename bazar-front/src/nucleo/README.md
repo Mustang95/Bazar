@@ -36,6 +36,6 @@ Alternativa Descartada e Por Quê: Objeto plano (não preserva ordem de inserç�
 
 Operação: Paginação
 Estrutura Escolhida: Cursor pointer sobre slice
-Complexidade de Tempo: O(L) onde L é o limit
+Complexidade de Tempo: O(N + L) onde L é o limit
 Complexidade de Espaço: O(L)
 Alternativa Descartada e Por Quê: Paginação por offset puro (risco de pular ou duplicar itens na transição de páginas).

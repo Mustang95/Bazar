@@ -139,6 +139,7 @@ app.use('/api/*', async (context, next) => {
 // impressão a evitar. Trocar agora custa dez minutos; depois da F02, custa uma tarde,
 // porque tipos, rotas e o cliente inteiro já estarão construídos em cima da forma errada.
 const TOTAL_ITEMS = 5000;
+const BASE = Date.UTC(2026, 7, 8);
 
 // `as const` faz CATEGORIAS ter tipo literal, então `categoria` no produto é
 // 'Livros' | 'Moveis' | ... e não `string`. Isso é o "contrato claro" do F00 na prática:
@@ -190,6 +191,9 @@ const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
   // exigiria assinatura (HMAC) ou um token guardado no servidor.
   const id = `prd_${Buffer.from(String(idNum)).toString('base64').replaceAll('=', '')}`;
 
+  const diasAtras = Math.floor(nextRandom() * 365);
+  const criadoEm = BASE - diasAtras * 86400000;
+
   return {
     id,
     titulo: `Produto ${index + 1}`,
@@ -204,7 +208,8 @@ const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
     // Agora o sorteio indexa a lista de categorias reais.
     categoria: CATEGORIAS[Math.floor(nextRandom() * CATEGORIAS.length)],
     estoque: Math.floor(nextRandom() * 50),
-    createdAt: new Date().toISOString(),
+    createdAtMs: criadoEm,
+    createdAt: new Date(criadoEm).toISOString(),
     views: Math.floor(nextRandom() * 1000000),
   };
 });

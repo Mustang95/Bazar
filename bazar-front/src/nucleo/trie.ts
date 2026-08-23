@@ -1,6 +1,10 @@
 import type { TSugestao, TTrieNode } from '../utils/types';
 import { normalizarTexto } from './utils';
 
+/**
+ *
+ * @returns TTrieNode
+ */
 export function createTrieNode(): TTrieNode {
   return {
     children: new Map(),
@@ -12,6 +16,9 @@ export function createTrieNode(): TTrieNode {
 /**
  * Atualiza a lista dos 10 mais frequentes em um nó específico.
  * Mantém o array limitado a 10 elementos em ordem decrescente de frequência.
+ *
+ * @param node
+ * @param item
  */
 function updateTopSuggestions(node: TTrieNode, item: TSugestao): void {
   const existingIndex = node.topSuggestions.findIndex(
@@ -19,13 +26,13 @@ function updateTopSuggestions(node: TTrieNode, item: TSugestao): void {
   );
 
   if (existingIndex !== -1) {
-    // se não encontrado colocamos o numero mais alto possível.
+    // se encontra colocamos o numero mais alto possível.
     node.topSuggestions[existingIndex].frequencia = Math.max(
       node.topSuggestions[existingIndex].frequencia,
       item.frequencia,
     );
   } else {
-    // se está dentro do top só puxa para o item node
+    // se não está dentro do top só puxa para o item node
     node.topSuggestions.push(item);
   }
 
@@ -40,6 +47,9 @@ function updateTopSuggestions(node: TTrieNode, item: TSugestao): void {
 /**
  * Insere um termo e sua frequência na Trie.
  * Complexidade: O(L), onde L é o comprimento do termo.
+ * @param raiz
+ * @param termo
+ * @param frequencia
  */
 export function insertTrie(
   raiz: TTrieNode,
@@ -67,6 +77,8 @@ export function insertTrie(
 /**
  * Busca as top 10 sugestões para um prefixo.
  * Complexidade: O(P), onde P é o comprimento do prefixo digitado.
+ * @param raiz
+ * @param prefixo
  */
 export function autocompleteTrie(
   raiz: TTrieNode,
@@ -82,5 +94,5 @@ export function autocompleteTrie(
     current = child;
   }
 
-  return current.topSuggestions;
+  return [...current.topSuggestions];
 }

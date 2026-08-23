@@ -12,6 +12,9 @@ export function normalizar(texto: string): string[] {
 /**
  * Cria um índice invertido a partir de uma lista de produtos.
  * Complexidade: O(N * T), onde N é o total de produtos e T a média de tokens por produto.
+ *
+ * @param produtos
+ * @returns
  */
 export function construirIndice(produtos: TProduto[]): TInvertedIndex {
   const index: TInvertedIndex = new Map();
@@ -36,6 +39,10 @@ export function construirIndice(produtos: TProduto[]): TInvertedIndex {
 /**
  * Executa busca por interseção estrita dos termos fornecidos.
  * Complexidade: O(T_count * log(T_count) + min(|S_i|) * K), iterando sempre pelo menor conjunto.
+ *
+ * @param consulta
+ * @param indice
+ * @returns
  */
 export function buscar(
   consulta: string,

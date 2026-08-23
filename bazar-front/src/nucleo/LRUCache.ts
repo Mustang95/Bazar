@@ -3,6 +3,9 @@ import type { LRUCache } from '../utils/types';
 /**
  * Cria um Cache LRU (Least Recently Used) funcional baseado em Map.
  * Complexidade: O(1) para leitura, escrita e despejo.
+ *
+ * @param capacity
+ * @returns
  */
 export function createLRUCache<K, V>(capacity: number): LRUCache<K, V> {
   const store = new Map<K, V>();

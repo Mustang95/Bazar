@@ -19,6 +19,9 @@ const filaDeEspera: ItemFila[] = [];
 /**
  * Adiciona uma requisição à fila de concorrência controlada.
  * Retorna uma Promise que só será resolvida quando a tarefa ganhar um slot livre.
+ * @param fnExecucao
+ * @param options
+ * @returns
  */
 function enfileirarRequisicao<T>(
   fnExecucao: () => Promise<T>,
@@ -53,6 +56,7 @@ function enfileirarRequisicao<T>(
 
 /**
  * Função orquestradora que gerencia as vagas disponíveis no canal de rede.
+ * @returns
  */
 function processarProximaTarefaDaFila() {
   // Se já atingimos o teto de 6 requisições ou se a fila estiver vazia, não faz nada
@@ -116,8 +120,11 @@ export interface RequestOptions extends RequestInit {
  * Utilitário 'comTempoLimite' escrito manualmente com Promise.race
  * Força uma promise a estourar um erro se demorar mais que o tempo estipulado.
  * Força uma promise a competir contra um cronômetro regressivo.
- *
  * @template T o tipo do dado esperado como retorno da Promise original
+ * @param promise
+ * @param ms
+ * @param controllerForAbort
+ * @returns
  */
 export function comTempoLimite<T>(
   promise: Promise<T>,
@@ -156,6 +163,8 @@ export function comTempoLimite<T>(
  * garantindo que uma falha não cancele a execução das outras.
  *
  * @template T o tipo de dado retornado por cada tarefa individual
+ * @param tarefas
+ * @returns
  */
 export async function emLotes<T>(
   tarefas: (() => Promise<T>)[],
@@ -171,11 +180,15 @@ export async function emLotes<T>(
 // 3. MÉTODOS AUXILIARES: RETRY, EXPONENTIAL BACKOFF E JITTER
 
 /**
+
+ */
+/**
  * Verifica se um método HTTP é estritamente idempotente.
  * Requisições idempotentes (GET, PUT, DELETE) podem ser repetidas com segurança se falharem.
  * Requisições não-idempotentes (POST, PATCH) Não podem ter retry cego, pois podem duplicar ações no banco.
+ * @param method
+ * @returns
  */
-
 function metodoIdempotente(method?: string): boolean {
   if (!method) return true; // GET por padrão se omitido
   const metodo = method.toUpperCase();
@@ -191,8 +204,11 @@ function metodoIdempotente(method?: string): boolean {
 /**
  * Função auxiliar para gerar um delay com recuo exponencial e Jitter;
  * Formula: (fator * (2 ^ tentativa)) + variacao_aleatoria (jitter)
+ *
+ * @param tentativa
+ * @param fator
+ * @returns
  */
-
 function calcularEsperaComJitter(
   tentativa: number,
   fator: number = 200,
@@ -229,12 +245,15 @@ function calcularEsperaComJitter(
  * A chave é uma string gerada a partir do método e da URL da requisição.
  * O valor é a Promise de resposta compartilhada.
  */
-
 const promessasEmVoo = new Map<string, Promise<any>>();
 
 /**
  * Gera uma assinatura única (chave identificadora) para uma requisição.
  * Garante que requisições idênticas gerem a mesma string.
+ *
+ * @param url
+ * @param options
+ * @returns
  */
 function gerarChaveRequisicao(url: string, options: RequestOptions): string {
   const metodo = (options.method || 'GET').toUpperCase();
@@ -247,8 +266,10 @@ function gerarChaveRequisicao(url: string, options: RequestOptions): string {
 /**
  * Dispara requisições HTTP usando Fetch nativo, blindado contra o servidor hostil.
  * Inclui Deduplicação automática e Fila de Concorrência Limitada por Prioridade.
- *
  * @template T O tipo de dado esperado na resposta JSON do servidor
+ * @param url
+ * @param options
+ * @returns
  */
 export async function request<T>(
   url: string,
@@ -307,6 +328,9 @@ export async function request<T>(
 /**
  * Contém o laço original com toda a lógica de resiliência, retries e timeouts.
  * Foi isolada aqui para ser envelopada pela regra de deduplicação acima.
+ * @param url
+ * @param options
+ * @returns
  */
 async function executarRequisicaoReal<T>(
   url: string,

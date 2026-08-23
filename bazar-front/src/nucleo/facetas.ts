@@ -2,6 +2,8 @@ import type { TProduto, TResultadoFacetas } from '../utils/types';
 
 /**
  * Classifica o preço em buckets pré-determinados.
+ * @param precoCentavos
+ * @returns string
  */
 function getPacotePrecos(precoCentavos: number): string {
   if (precoCentavos < 10000) return 'Até R$ 99';
@@ -11,8 +13,13 @@ function getPacotePrecos(precoCentavos: number): string {
 }
 
 /**
+
+ */
+/**
  * Calcula todas as contagens de facetas em uma única iteração.
  * Complexidade: O(N), onde N é o total de produtos filtrados.
+ * @param filteredProducts
+ * @returns
  */
 export function contadorDeFacetas(
   filteredProducts: TProduto[],

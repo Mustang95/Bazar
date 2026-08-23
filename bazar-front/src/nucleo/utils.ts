@@ -1,3 +1,8 @@
+/**
+ *
+ * @param texto
+ * @returns string
+ */
 export function normalizarTexto(texto: string): string {
   return texto
     .normalize('NFD')

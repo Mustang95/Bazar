@@ -8,6 +8,7 @@ export type TProduto = {
   categoria: string;
   estoque: number;
   createdAt: string;
+  createdAtMs: number;
   views: number;
 };
 
@@ -58,4 +59,5 @@ export interface TResultadoPaginado<T> {
   nextCursor: string | null;
   hasMore: boolean;
   totalCount: number;
+  cursorInvalido?: boolean;
 }
