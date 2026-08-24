@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { TFiltrosSelecionados, TProduto } from '../utils/types';
 import { getCatalogoTodosProdutos } from '../rede/catalogo';
-import { buscarIntersecao, construirIndice } from '../nucleo/indiceInvertido';
+import {
+  buscarIntersecao,
+  construirIndice,
+  normalizar,
+} from '../nucleo/indiceInvertido';
 import { contarFaixasPreco, contarPor } from '../nucleo/facetas';
 import { sortProductsMultiKey } from '../nucleo/ordenacao';
 import { paginateByCursor } from '../nucleo/paginacaoCursor';
 import { useDebounce } from './useDebounce';
 import { getInitialQueryFromURL } from './useSyncQueryParam';
-import { rodarBenchmarks } from '../benchmarks/sort.bench';
-import { gerarProdutos } from '../nucleo/__fixtures__/produtos';
 import { createLRUCache } from '../nucleo/LRUCache';
 import { autocompleteTrie, createTrieNode, insertTrie } from '../nucleo/trie';
 import { getTopKMostViewed } from '../nucleo/minHeap';
@@ -53,7 +55,6 @@ export default function useCatalogo(urlParams: TProps) {
       .then((response) => {
         setStatusRede('idle');
         setLista(response);
-        rodarBenchmarks(gerarProdutos(200));
       })
       .catch(() => {
         setStatusRede('error');
@@ -83,28 +84,36 @@ export default function useCatalogo(urlParams: TProps) {
     return construirIndice(lista);
   }, [lista]);
 
-  // Instancia um cache LRU com capacidade de 50 consultas
-  const searchCache = useMemo(
-    () => createLRUCache<string, Set<string | number>>(50),
-    [],
-  );
+  // Cache LRU invalidado quando 'lista' muda
+  const searchCache = useMemo(() => {
+    return createLRUCache<string, Set<string | number>>(50);
+  }, [lista]);
 
-  // 1. Popula a Trie na chegada dos produtos
+  // Trie populada por tokens com contagem de frequência no catálogo
   const trieRoot = useMemo(() => {
-    if (!lista) return null;
-    const root = createTrieNode();
+    if (!lista || lista.length === 0) return null;
 
-    for (const produto of lista) {
-      // Insere o título ou tags do produto com sua frequência/popularidade
-      insertTrie(root, produto.titulo, produto.views || 1);
+    const contagemTokens = new Map<string, number>();
+
+    for (const item of lista) {
+      const tokens = normalizar(item.titulo);
+      const tokensUnicos = new Set(tokens);
+      for (const token of tokensUnicos) {
+        contagemTokens.set(token, (contagemTokens.get(token) || 0) + 1);
+      }
+    }
+
+    const root = createTrieNode();
+    for (const [token, freq] of contagemTokens.entries()) {
+      insertTrie(root, token, freq);
     }
 
     return root;
   }, [lista]);
 
-  // 2. Sugestões de Autocomplete em tempo real (usa 'filter' sem debounce)
+  // Autocomplete instantâneo a cada tecla
   const sugestoesAutocomplete = useMemo(() => {
-    const termo = filter.trim();
+    const termo = filter.trim().toLowerCase();
     if (!trieRoot || termo.length === 0) return [];
     return autocompleteTrie(trieRoot, termo);
   }, [trieRoot, filter]);

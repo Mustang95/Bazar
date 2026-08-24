@@ -152,6 +152,8 @@ const CATEGORIAS = [
   'Decoracao',
 ] as const;
 
+const DIFF = ['Azul', 'Vermelho', 'Rosa', 'Branco', 'Preto'] as const;
+
 const PAISES = [
   'China',
   'Brasil',
@@ -196,7 +198,7 @@ const database = Array.from({ length: TOTAL_ITEMS }, (_, index) => {
 
   return {
     id,
-    titulo: `Produto ${index + 1}`,
+    titulo: `${CATEGORIAS[Math.floor(nextRandom() * CATEGORIAS.length)]} ${DIFF[Math.floor(nextRandom() * DIFF.length)]} ${index + 1}`,
     // Dinheiro em CENTAVOS, como inteiro — nunca como float.
     // 0.1 + 0.2 !== 0.3 em ponto flutuante, e em preço isso vira centavo perdido na soma
     // do carrinho. Formatar para "R$ 49,90" é responsabilidade da apresentação.

@@ -3,6 +3,8 @@ import Paginacao from './paginacao';
 import useCatalogo from './useCatalogo';
 import { usePaginationCursor } from './usePaginacaoPorCursor';
 import Facetas from './facetas';
+import { rodarBenchmarks } from '../benchmarks/sort.bench';
+import { gerarProdutos } from '../nucleo/__fixtures__/produtos';
 
 export default function Catalogo() {
   const {
@@ -71,6 +73,19 @@ export default function Catalogo() {
           }}
         >
           Recarregar
+        </button>
+        <button
+          type="button"
+          onClick={() => rodarBenchmarks(gerarProdutos(5000))}
+          style={{
+            padding: '0 16px',
+            cursor: 'pointer',
+            background: '#333',
+            color: '#fff',
+            border: '1px solid #555',
+          }}
+        >
+          rodar benchmark
         </button>
       </div>
 
