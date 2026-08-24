@@ -73,7 +73,12 @@ export type TFiltrosSelecionados = {
   vendedor?: string;
   condicao?: string;
   pais?: string;
+  faixaPreco?: string;
 };
+
+export type TChavesTexto = {
+  [K in keyof TProduto]: TProduto[K] extends string ? K : never;
+}[keyof TProduto];
 
 export type TResultado =
   | {

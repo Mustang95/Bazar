@@ -13,7 +13,7 @@ export function paginateByCursor<T extends { id: string | number }>(
   items: T[],
   limit: number,
   cursor?: string | null,
-  indice?: Map<string, number>,
+  indice?: Map<string | number, number>,
 ): TResultadoPaginado<T> {
   let startIndex = 0;
   // dois comandos que geram o ganho de pesquisa quando invocar paginateByCursor

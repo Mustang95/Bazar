@@ -94,15 +94,15 @@ export default function Facetas({
           );
         },
       )}
-      {/* <h4>Faixa de Preço</h4>
+      <h4>Faixa de Preço</h4>
       {Array.from(resultado.facets.faixaPreco.entries()).map(
-        ([condicao, count]) => {
-          const isSelected = filtros.condicao === condicao;
+        ([faixaPreco, count]) => {
+          const isSelected = filtros.faixaPreco === faixaPreco;
           return (
             <button
               type="button"
-              key={condicao}
-              onClick={() => toggleFiltro('condicao', condicao)}
+              key={faixaPreco}
+              onClick={() => toggleFiltro('faixaPreco', faixaPreco)}
               style={{
                 display: 'block',
                 margin: '4px 0',
@@ -116,11 +116,11 @@ export default function Facetas({
                 padding: '4px 8px',
               }}
             >
-              {condicao} ({count})
+              {faixaPreco} ({count})
             </button>
           );
         },
-      )} */}
+      )}
     </aside>
   );
 }

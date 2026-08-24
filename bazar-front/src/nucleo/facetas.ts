@@ -1,4 +1,4 @@
-import type { TProduto, TResultadoFacetas } from '../utils/types';
+import type { TChavesTexto, TProduto } from '../utils/types';
 
 /**
  * Classifica o preço em buckets pré-determinados.
@@ -13,39 +13,37 @@ function getPacotePrecos(precoCentavos: number): string {
 }
 
 /**
+ * Conta ocorrências de um campo de texto em uma única passada O(N).
+ * @param produtos
+ * @param campo
+ * @returns Map<string, number>
+ */
+export function contarPor<K extends TChavesTexto>(
+  produtos: TProduto[],
+  campo: K,
+): Map<string, number> {
+  const mapa = new Map<string, number>();
 
- */
+  for (const produto of produtos) {
+    const valor = produto[campo];
+    mapa.set(valor, (mapa.get(valor) || 0) + 1);
+  }
+
+  return mapa;
+}
+
 /**
- * Calcula todas as contagens de facetas em uma única iteração.
- * Complexidade: O(N), onde N é o total de produtos filtrados.
- * @param filteredProducts
- * @returns
+ * Classifica e conta as faixas de preço em uma única passada O(N).
+ * @param produtos
+ * @returns Map<string, number>
  */
-export function contadorDeFacetas(
-  filteredProducts: TProduto[],
-): TResultadoFacetas {
-  const vendedores = new Map<string, number>();
-  const condicoes = new Map<string, number>();
-  const paises = new Map<string, number>();
+export function contarFaixasPreco(produtos: TProduto[]): Map<string, number> {
   const faixaPreco = new Map<string, number>();
 
-  for (const product of filteredProducts) {
-    // Vendedor
-    vendedores.set(
-      product.vendedor,
-      (vendedores.get(product.vendedor) || 0) + 1,
-    );
-
-    // Condição
-    condicoes.set(product.condicao, (condicoes.get(product.condicao) || 0) + 1);
-
-    // País
-    paises.set(product.pais, (paises.get(product.pais) || 0) + 1);
-
-    // Faixa de Preço
-    const bucket = getPacotePrecos(product.precoCentavos);
+  for (const produto of produtos) {
+    const bucket = getPacotePrecos(produto.precoCentavos);
     faixaPreco.set(bucket, (faixaPreco.get(bucket) || 0) + 1);
   }
 
-  return { vendedores, condicoes, paises, faixaPreco };
+  return faixaPreco;
 }
